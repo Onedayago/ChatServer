@@ -32,6 +32,7 @@ router.post('/sendMsg', async (req, res, next) => {
                 )
                 //判断用户是否在线
                 if(userInfo.isOnline){
+                    console.log(`给用户${msgInfo[0].username}发消息`)
                     global.io.to(userInfo.socketId).emit('msg', msgInfo[0]);
                 }
                 res.json({
@@ -62,14 +63,25 @@ router.post('/sendMsg', async (req, res, next) => {
 
 //获取聊天记录列表
 router.post('/getMsgList',async (req, res, next) => {
-    const {userId, friendId} = req.body;
+    const {userId, friendId, page, pageSize, lastId} = req.body;
     try {
-        const result = await sequelize.query(
-            "SELECT msgs.id, msgs.userId, msgs.friendId, users.username, toUsers.username as friendname, msgs.msgContent, msgs.msgType,  msgs.createdAt from msgs LEFT JOIN users ON users.id = msgs.userId LEFT JOIN users as toUsers ON toUsers.id = msgs.friendId where (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?) order by msgs.createdAt asc",
-            {
-                replacements: [userId, friendId, friendId, userId],
-                type: QueryTypes.SELECT
-            })
+        let result;
+        if(lastId){
+            result = await sequelize.query(
+                "(SELECT msgs.id, msgs.userId, msgs.friendId, users.username, toUsers.username as friendname, msgs.msgContent, msgs.msgType,  msgs.createdAt from msgs LEFT JOIN users ON users.id = msgs.userId LEFT JOIN users as toUsers ON toUsers.id = msgs.friendId where ((userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?)) AND msgs.id < ? order by msgs.createdAt DESC LIMIT 0, ?) ORDER BY id;",
+                {
+                    replacements: [userId, friendId, friendId, userId, lastId, parseInt(pageSize)],
+                    type: QueryTypes.SELECT
+                })
+        }else{
+            result = await sequelize.query(
+                "(SELECT msgs.id, msgs.userId, msgs.friendId, users.username, toUsers.username as friendname, msgs.msgContent, msgs.msgType,  msgs.createdAt from msgs LEFT JOIN users ON users.id = msgs.userId LEFT JOIN users as toUsers ON toUsers.id = msgs.friendId where (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?) order by msgs.createdAt DESC LIMIT 0, ?) ORDER BY id;",
+                {
+                    replacements: [userId, friendId, friendId, userId, parseInt(pageSize)],
+                    type: QueryTypes.SELECT
+                })
+        }
+
         if(result){
             res.json({
                 code: 200,
