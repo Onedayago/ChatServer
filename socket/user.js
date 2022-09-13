@@ -1,10 +1,11 @@
 
 const {User} = require("../model/index");
 
-async function updateUserStatus(userId, isOnline, socketId) {
+async function updateUserStatus(userId, isOnline, socketId, peerId) {
     const result = await User.update({
         isOnline,
-        socketId
+        socketId,
+        peerId,
     }, {
         where: {
             id: userId

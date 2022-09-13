@@ -41,7 +41,6 @@ User.hasMany(Friend, {
     constraints: true,
 })
 
-Friend.sync({force: false})
 
 
 module.exports = Friend;

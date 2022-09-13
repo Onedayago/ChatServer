@@ -26,9 +26,13 @@ const User = sequelize.define('user', {
     isOnline: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    peerId: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 });
 
-User.sync({force: false});
+User.sync({alter: true});
 
 module.exports = User;

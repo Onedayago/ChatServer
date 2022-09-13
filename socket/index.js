@@ -7,7 +7,7 @@ function socketIo(io) {
     io.on('connection', (socket) => {
         global.socket = socket;
         socket.on('login', (client)=>{
-            updateUserStatus(client?.id, true, socket.id).then(r =>{
+            updateUserStatus(client?.id, true, socket.id, client?.peerId).then(r =>{
 
             })
         })

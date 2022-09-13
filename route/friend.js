@@ -72,7 +72,7 @@ router.post('/getFriendList',async (req, res, next) => {
     const {userId} = req.body;
     try {
         const result = await sequelize.query(
-            "SELECT friends.id, users.id as userId, users.username from friends INNER JOIN users on users.id = friends.userId WHERE users.id != ? AND friends.friendId = ? AND friends.accept = TRUE;",
+            "SELECT friends.id, users.id as userId, users.peerId, users.username from friends INNER JOIN users on users.id = friends.userId WHERE users.id != ? AND friends.friendId = ? AND friends.accept = TRUE;",
             {
                 replacements: [userId, userId],
                 type: QueryTypes.SELECT
