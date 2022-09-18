@@ -192,7 +192,7 @@ router.post('/getUserStatus', async (req, res, next) => {
     const {userId} = req.body;
     try {
         const result = await User.findOne({
-            attributes: ['isOnline', 'socketId'],
+            attributes: ['isOnline', 'socketId', 'peerId'],
             where: {
                 id: userId
             }
