@@ -6,6 +6,7 @@ const {isExistUser, isExistUserName} = require("./common");
 const {Op, QueryTypes} = require("sequelize");
 const {Friend} = require("../model");
 const sequelize = require("../db");
+const {encrypt} = require("../util/token");
 
 //登录
 router.post('/login', async (req, res, next) => {
@@ -14,14 +15,16 @@ router.post('/login', async (req, res, next) => {
         const result = await User.findOne({
             where: {
                 username,
-                password
+                password,
             }
         })
+        let data = result.toJSON();
+        data['token'] = await encrypt(username);
         if(result){
             res.json({
                 code: 200,
                 msg: '登录成功',
-                data: result.toJSON()
+                data: data,
             })
         }else{
             res.json({

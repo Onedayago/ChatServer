@@ -33,5 +33,6 @@ User.hasMany(Msg, {
     constraints: true,
 })
 
+Msg.sync({});
 
 module.exports = Msg;

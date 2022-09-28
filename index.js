@@ -12,20 +12,9 @@ const cors = require('cors');
 const server = http.createServer(app);
 const { ExpressPeerServer } = require('peer');
 const io = require('socket.io')(server, { cors: true });
-
+const {authToken} =  require("./middle/index");
 
 app.use(cors())
-
-// 服务器提交的数据json化
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-
-router(app);
-
-const socketIo = require("./socket/index");
-
-socketIo(io);
-
 const peerServer = ExpressPeerServer(server, {
     path: '/myapp',
     debug: true,
@@ -40,6 +29,19 @@ peerServer.on('disconnect',(client)=>{
 })
 
 app.use('/peerjs', peerServer);
+
+
+// 服务器提交的数据json化
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(authToken)
+router(app);
+
+const socketIo = require("./socket/index");
+
+socketIo(io);
+
+
 
 server.listen(config.port, async () => {
     console.log(`成功监听端口${config.port}`)
